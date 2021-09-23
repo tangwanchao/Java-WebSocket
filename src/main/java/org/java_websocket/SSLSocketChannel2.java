@@ -49,6 +49,7 @@ import javax.net.ssl.SSLSession;
 import org.java_websocket.interfaces.ISSLChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.lang.NullPointerException;
 
 /**
  * Implements the relevant portions of the SocketChannel interface with the SSLEngine wrapper.
@@ -384,7 +385,9 @@ public class SSLSocketChannel2 implements ByteChannel, WrappedByteChannel, ISSLC
 
   public void close() throws IOException {
     sslEngine.closeOutbound();
-    sslEngine.getSession().invalidate();
+    try {
+      sslEngine.getSession().invalidate();
+    }catch (NullPointerException ex){}
     if (socketChannel.isOpen()) {
       socketChannel.write(wrap(emptybuffer));// FIXME what if not all bytes can be written
     }
